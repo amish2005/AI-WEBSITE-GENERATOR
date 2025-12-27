@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 AI Website Generator
 
-## Getting Started
+An AI-powered website generator built with Next.js (App Router) and Tailwind CSS.  
+This project enables users to generate modern, responsive website layouts using natural language prompts, focusing on clean architecture and a smooth developer experience.
 
-First, run the development server:
+---
 
-```bash
+## ✨ Features
+
+- ⚡ Next.js App Router for scalable routing
+- 🎨 Tailwind CSS for modern, responsive UI
+- 🧠 AI-driven website generation using prompts
+- 🧩 Modular and reusable component architecture
+- 🗂 Workspace-based structure for generated websites
+- 🔐 Environment-variable–based configuration
+- 🛠 Developer-friendly TypeScript setup
+- 🚀 Ready for Vercel deployment
+
+---
+
+## 🛠 Tech Stack
+
+- Framework: Next.js (App Router)
+- Language: TypeScript
+- Styling: Tailwind CSS
+- State Management: React Context API
+- Backend: Next.js Route Handlers (API routes)
+- Package Manager: npm
+
+---
+
+## 📂 Project Structure
+
+ai-website-generator/
+├── app/                    # App Router pages, layouts & API routes  
+│   ├── (auth)/             # Authentication routes  
+│   ├── api/                # Backend API routes  
+│   ├── playground/         # AI generation playground  
+│   ├── workspace/          # User workspace  
+│   ├── layout.tsx  
+│   └── page.tsx  
+├── components/             # Reusable UI components  
+├── config/                 # App & tool configurations  
+├── context/                # Global state management  
+├── hooks/                  # Custom React hooks  
+├── lib/                    # Utility functions & helpers  
+├── public/                 # Static assets  
+├── .env.example            # Environment variable template  
+├── next.config.ts  
+├── tailwind.config.ts  
+├── postcss.config.js  
+└── package.json  
+
+---
+
+## ⚙️ Getting Started
+
+### 1. Clone the repository
+
+git clone https://github.com/amish2005/AI-WEBSITE-GENERATOR.git  
+cd AI-WEBSITE-GENERATOR
+
+---
+
+### 2. Install dependencies
+
+npm install
+
+---
+
+### 3. Setup environment variables
+
+Create a `.env.local` file using the template:
+
+cp .env.example .env.local
+
+Add the required API keys and configuration values.
+
+⚠️ Never commit `.env` or `.env.local` files.
+
+---
+
+### 4. Run the development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔐 Environment Variables
 
-## Learn More
+All required environment variables are documented in the `.env.example` file.  
+This includes placeholders for AI API keys and application-level configuration.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is optimized for deployment on Vercel.
 
-## Deploy on Vercel
+Steps:
+1. Push the repository to GitHub  
+2. Import the repository into Vercel  
+3. Add environment variables in the Vercel dashboard  
+4. Deploy  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📌 Future Enhancements
+
+- Real-time AI streaming responses  
+- Theme and layout presets  
+- Export generated websites  
+- Authentication and user dashboards  
+- Prompt history and project persistence  
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome.
+
+1. Fork the repository  
+2. Create a new branch  
+3. Commit your changes  
+4. Open a Pull Request  
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👤 Author
+
+Amish
+B.Tech Electronics & Communication Engineering  
+Delhi Technological University (DTU)
+
+Interested in full-stack development, AI-powered systems, and scalable frontend architecture.
+
+---
+
+⭐ If you find this project useful, consider starring the repository.
