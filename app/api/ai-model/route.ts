@@ -38,18 +38,16 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
+      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
       {
-        model: "xiaomi/mimo-v2-flash:free",
+        model: "gemini-2.5-flash",
         messages,
         stream: true,
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${process.env.GEMINI_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "My Next.js App",
         },
         responseType: "stream",
       }
@@ -59,18 +57,24 @@ export async function POST(req: NextRequest) {
     const encoder = new TextEncoder();
 
     let isClosed = false;
+    let buffer = "";
 
     const readable = new ReadableStream({
       start(controller) {
         nodeStream.on("data", (chunk: Buffer) => {
           if (isClosed) return;
 
-          const lines = chunk.toString().split("\n");
+          buffer += chunk.toString();
+          const lines = buffer.split("\n");
+          
+          // Keep the last incomplete line in the buffer
+          buffer = lines.pop() || "";
 
           for (const line of lines) {
-            if (!line.startsWith("data:")) continue;
+            const trimmedLine = line.trim();
+            if (!trimmedLine.startsWith("data:")) continue;
 
-            const payload = line.replace("data:", "").trim();
+            const payload = trimmedLine.replace("data:", "").trim();
 
             if (payload === "[DONE]") {
               isClosed = true;

@@ -101,7 +101,12 @@ function WebsiteDesign({ generatedCode }: Props) {
 
             selectedElRef.current = target;
             try { selectedElRef.current.style.outline = "2px solid red"; } catch (err) {}
-            try { selectedElRef.current.setAttribute("contenteditable", "true"); } catch (err) {}
+            
+            const noEditTags = ['IMG', 'INPUT', 'BUTTON', 'SELECT', 'TEXTAREA', 'HR', 'BR'];
+            if (!noEditTags.includes(target.tagName)) {
+                try { selectedElRef.current.setAttribute("contenteditable", "true"); } catch (err) {}
+            }
+            
             try { (selectedElRef.current as HTMLElement).focus(); } catch (err) {}
             console.log("Selected element:", selectedElRef.current);
             setSelectedElement(selectedElRef.current);

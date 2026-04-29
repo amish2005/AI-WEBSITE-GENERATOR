@@ -7,7 +7,7 @@ import { ro } from 'date-fns/locale'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { set } from 'date-fns'
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
 
 
@@ -40,41 +40,41 @@ const generateRandomFrameNumber = () => {
 }
 
 function Hero() {
-    const [userInput, setUserInput] = useState();
-    const user = useUser();
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
+  const [userInput, setUserInput] = useState();
+  const user = useUser();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-    const createNewProject = async () =>{
-      setLoading(true);
-      const projectId = uuidv4();
-      const frameId = generateRandomFrameNumber();
-      const message = [
-        {role: 'user', content: userInput }
-      ]
-      try{
-        // console.log(frameId)
-        const result = await axios.post('api/projects', {
-          projectId: projectId,
-          frameId: frameId,
-          messages: message
+  const createNewProject = async () => {
+    setLoading(true);
+    const projectId = uuidv4();
+    const frameId = generateRandomFrameNumber();
+    const message = [
+      { role: 'user', content: userInput }
+    ]
+    try {
+      // console.log(frameId)
+      const result = await axios.post('/api/projects', {
+        projectId: projectId,
+        frameId: frameId,
+        messages: message
 
-        });
+      });
 
-        console.log("Project Inserted: " + result.data);
-        toast.success('Project created successfully!');
+      console.log("Project Inserted: " + result.data);
+      toast.success('Project created successfully!');
 
-        // Navigate to the playground
-        router.push(`/playground/${projectId}?frameId=${frameId}`);
-        setLoading(false);
-      } catch (e) {
-        toast.error('Internal Server Error. Please try again later.');
-        console.log(e)
-      }
-
+      // Navigate to the playground
+      router.push(`/playground/${projectId}?frameId=${frameId}`);
+      setLoading(false);
+    } catch (e) {
+      toast.error('Internal Server Error. Please try again later.');
+      console.log(e)
     }
 
-    
+  }
+
+
 
 
   return (
@@ -86,26 +86,26 @@ function Hero() {
       {/* input box */}
 
       <div className='w-full max-w-2xl p-5 border mt-5 rounded-2xl'>
-        <textarea value={userInput} onChange={(event) => setUserInput(event.target.value)} placeholder='Describe your page design' className='w-full h-24 focus:outline-none focus:ring-0 resize-none'/>
+        <textarea value={userInput} onChange={(event) => setUserInput(event.target.value)} placeholder='Describe your page design' className='w-full h-24 focus:outline-none focus:ring-0 resize-none' />
         <div className='flex justify-between items-center'>
-            <Button variant={'ghost'}><ImagePlus /></Button>
-            {!user ? <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
-              <Button disabled={!userInput || loading}><ArrowUp /></Button>
-            </SignInButton> :
+          <Button variant={'ghost'}><ImagePlus /></Button>
+          {!user ? <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
+            <Button disabled={!userInput || loading}><ArrowUp /></Button>
+          </SignInButton> :
             <Button onClick={createNewProject} disabled={!userInput}>
-              {loading?<Loader2Icon className='animate-spin'/>:<ArrowUp />}</Button>
-  }
+              {loading ? <Loader2Icon className='animate-spin' /> : <ArrowUp />}</Button>
+          }
         </div>
       </div>
-      
+
 
       {/* suggestion list */}
       <div className='mt-4 flex gap-3'>
         {suggestions.map((suggestion, index) => (
-            <Button onClick={() => setUserInput(suggestion.prompt)} key={index} variant={'outline'}>
-                <suggestion.icon />
-                {suggestion.label}
-            </Button>
+          <Button onClick={() => setUserInput(suggestion.prompt)} key={index} variant={'outline'}>
+            <suggestion.icon />
+            {suggestion.label}
+          </Button>
         ))}
       </div>
 

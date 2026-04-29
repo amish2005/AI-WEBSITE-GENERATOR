@@ -45,14 +45,16 @@ function ElementSettingSection({ selectedEl, clearSelection }: Props) {
         if (!selectedEl) return;
 
         // set initial classes
-        const currentClasses = selectedEl.className
+        const classString = selectedEl.getAttribute("class") || "";
+        const currentClasses = classString
             .split(" ")
             .filter((c) => c.trim() !== "");
         setClasses(currentClasses);
 
         // watch for future class changes
         const observer = new MutationObserver(() => {
-            const updated = selectedEl.className
+            const currentClassStr = selectedEl.getAttribute("class") || "";
+            const updated = currentClassStr
                 .split(" ")
                 .filter((c) => c.trim() !== "");
             setClasses(updated);
@@ -66,7 +68,7 @@ function ElementSettingSection({ selectedEl, clearSelection }: Props) {
     const removeClass = (cls: string) => {
         const updated = classes.filter((c) => c !== cls);
         setClasses(updated);
-        selectedEl.className = updated.join(" ");
+        selectedEl.setAttribute("class", updated.join(" "));
     };
 
     // Add new class
@@ -76,7 +78,7 @@ function ElementSettingSection({ selectedEl, clearSelection }: Props) {
         if (!classes.includes(trimmed)) {
             const updated = [...classes, trimmed];
             setClasses(updated);
-            selectedEl.className = updated.join(" ");
+            selectedEl.setAttribute("class", updated.join(" "));
         }
         setNewClass("");
     };

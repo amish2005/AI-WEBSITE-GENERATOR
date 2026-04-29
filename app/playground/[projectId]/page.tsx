@@ -33,10 +33,9 @@ Instructions:
    - All primary components must match the theme color.  
    - Add proper padding and margin for each element.  
    - Components should be independent; do not connect them.  
-   - Use placeholders for all images:  
-       - Light mode: https://community.softr.io/uploads/db9110/original/2X/7/74e6e7e382d0ff5d7773ca9a87e6f6f8817a68a6.jpeg
-       - Dark mode: https://www.cibaky.com/wp-content/uploads/2015/12/placeholder-3.jpg
-       - Add alt tag describing the image prompt.  
+   - For all images, use the Unsplash proxy: '/api/unsplash?query=[keyword]' where [keyword] describes the image you want (e.g., '/api/unsplash?query=office').
+   - Ensure the image 'src' uses this exact format.
+   - Add an alt tag describing the image.  
    - Use the following libraries/components where appropriate:  
        - FontAwesome icons (fa fa-)  
        - Flowbite UI components: buttons, modals, forms, tables, tabs, alerts, cards, dialogs, dropdowns, accordions, etc.  
@@ -71,7 +70,6 @@ function PlayGround() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Messages[]>([]);
   const [generatedCode, setGeneratedCode] = useState<any>();
-  const [replaceMode, setReplaceMode] = useState<boolean>(false);
 
   useEffect(() => {
     frameId && getFrameDetails();
@@ -99,11 +97,11 @@ function PlayGround() {
     }
 
     setGeneratedCode(formattedCode);
-    if(result.data?.chatMessages?.length == 1){
+    if (result.data?.chatMessages?.length == 1) {
       const userMsg = result.data?.chatMessages[0].content;
       SendMessage(userMsg);
     } else {
-      setMessages(result.data?.chatMessages);
+      setMessages(result.data?.chatMessages || []);
     }
   }
 
@@ -114,22 +112,32 @@ function PlayGround() {
     const localMessages = [...messages, { role: 'user', content: userInput }];
     setMessages(localMessages);
 
-    // if replace mode, clear existing generated code before streaming
-    if (replaceMode) setGeneratedCode('');
+    // Code will be replaced when the stream starts emitting code chunks
 
     // Build payload: choose system instruction depending on whether we have existing generated code
     const payloadMessages: any[] = [];
     if (generatedCode) {
-      // When editing existing code, give an explicit edit instruction so the model replaces the previous HTML rather than appending
-      const editSystem = `You are an expert assistant that edits HTML/CSS based on user requests. The previous HTML code is included in the conversation as an assistant message inside triple backticks (\`\`\`html ... \`\`\`).
-Given the user's instruction, produce the complete, updated HTML (only the body content) and wrap it in \`\`\`html ... \`\`\`. Do NOT include any explanation or commentary. Do NOT append a new copy of sections (for example, do not add a second navbar below the existing one). Instead, modify the existing structure in-place to implement the user's request.`;
+      const code = typeof generatedCode === 'string' ? generatedCode.replace(/^```+\w*\n?/, '') : '';
+      const editSystem = `You are an expert assistant that edits HTML/CSS based on user requests.
+
+Here is the current HTML code of the design:
+\`\`\`html
+${code}
+\`\`\`
+
+Instructions:
+1. If the user input is explicitly asking to modify the code, update the design, or fix an issue:
+   - Produce the complete, updated HTML (only the body content) and wrap it EXPLICITLY in \`\`\`html ... \`\`\`. 
+   - Do NOT include any explanation or commentary. 
+   - Do NOT append a new copy of sections. Modify the existing structure in-place.
+   - For any new images, use: \`/api/unsplash?query=[keyword]\`.
+
+2. If the user input is a general question, greeting, or does NOT require code changes (e.g., "Hello", "What did I ask?"):
+   - Respond with a simple, friendly text message. 
+   - Do NOT generate any HTML code.`;
 
       payloadMessages.push({ role: 'system', content: editSystem });
-      // include prior conversation (including the new user message)
       if (localMessages && localMessages.length > 0) payloadMessages.push(...localMessages);
-      // attach existing generated code as an assistant message so the model can edit it
-      const code = typeof generatedCode === 'string' ? generatedCode.replace(/^```+\w*\n?/, '') : '';
-      payloadMessages.push({ role: 'assistant', content: '```html\n' + code + '\n```' });
     } else {
       // fresh generation: keep original Prompt behaviour
       payloadMessages.push({ role: 'system', content: Prompt.replace('{userInput}', userInput) });
@@ -158,7 +166,7 @@ Given the user's instruction, produce the complete, updated HTML (only the body 
         isCode = true;
         const index = aiResponse.indexOf('```html') + 7;
         const initialCodeChunk = aiResponse.slice(index);
-        setGeneratedCode((prev: any) => (replaceMode || !prev ? initialCodeChunk : (prev ?? '') + initialCodeChunk));
+        setGeneratedCode(initialCodeChunk);
       } else if (isCode) {
         setGeneratedCode((prev: any) => (prev ?? '') + chunk);
       }
@@ -181,7 +189,7 @@ Given the user's instruction, produce the complete, updated HTML (only the body 
   }
 
   useEffect(() => {
-    if(messages.length > 0){
+    if (messages && messages.length > 0) {
       SaveMessages();
     }
   }, [messages])
@@ -193,7 +201,7 @@ Given the user's instruction, produce the complete, updated HTML (only the body 
 
 
   const SaveMessages = async () => {
-    const result = await axios.put('/api/chats',{
+    const result = await axios.put('/api/chats', {
       messages: messages,
       frameId: frameId
     })
@@ -201,7 +209,7 @@ Given the user's instruction, produce the complete, updated HTML (only the body 
     console.log(result)
   }
 
-  
+
 
   const SaveGeneratedCode = async (code: string) => {
     const result = await axios.put('/api/frames', {
@@ -218,14 +226,14 @@ Given the user's instruction, produce the complete, updated HTML (only the body 
 
   return (
     <div>
-      <PlaygroundHeader replaceMode={replaceMode} setReplaceMode={setReplaceMode} />
+      <PlaygroundHeader />
 
       <div className='flex'>
         {/* Chat Section  */}
-        <ChatSection messages={messages ?? []} onSend={(input: string) => SendMessage(input)} loading={loading}/>
+        <ChatSection messages={messages ?? []} onSend={(input: string) => SendMessage(input)} loading={loading} />
         {/* Website design */}
-        <WebsiteDesign generatedCode={generatedCode?.replace('```', '')}/>
-        
+        <WebsiteDesign generatedCode={generatedCode?.replace('```', '')} />
+
       </div>
 
     </div>
